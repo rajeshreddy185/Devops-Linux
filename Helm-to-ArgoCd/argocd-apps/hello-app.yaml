@@ -48,3 +48,14 @@ spec:
     kind: Deployment
     jsonPointers:
     - /spec/replicas
+    - /metadata/labels/app.kubernetes.io/instance
+    - /metadata/labels/app.kubernetes.io/name
+    - /metadata/labels/app.kubernetes.io/managed-by
+    - /metadata/labels/helm.sh/chart
+  - group: ""
+    kind: Service
+    jsonPointers:
+    - /metadata/labels/app.kubernetes.io/instance
+    - /metadata/labels/app.kubernetes.io/name
+    - /metadata/labels/app.kubernetes.io/managed-by
+    - /metadata/labels/helm.sh/chart
