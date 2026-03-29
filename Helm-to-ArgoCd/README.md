@@ -12,8 +12,6 @@ The migration process follows a **systematic, safety-first approach** that ensur
 ```
 Objective: Understand and document the exact current state
 ```
-
-#### **Step 1.1: Extract Current Configuration**
 ```bash
 # Capture deployment state
 kubectl get deployment <app-name> -o yaml > current-deployment.yaml
@@ -29,7 +27,7 @@ kubectl get service <app-name> -o yaml > current-service.yaml
 - **Service configuration**: type, ports, selector, external settings
 - **Replica count**: Current scaling configuration
 
-#### **Step 1.2: Identify Immutable Fields**
+#### **Identify Immutable Fields**
 ```yaml
 # Fields that cannot be changed on existing resources:
 spec:
@@ -44,13 +42,13 @@ spec:
 Objective: Create Helm chart that generates identical manifests
 ```
 
-#### **Step 2.1: Chart Structure Setup**
+#### **Chart Structure Setup**
 ```bash
 mkdir -p helm-charts/<app-name>/templates
 cd helm-charts/<app-name>
 ```
 
-#### **Step 2.2: Values Configuration**
+#### **Values Configuration**
 ```yaml
 # values.yaml - Extracted from existing deployment
 replicaCount: <extracted-value>
@@ -64,7 +62,7 @@ service:
   selector: <extracted-selector>
 ```
 
-#### **Step 2.3: Template Creation**
+#### **Template Creation**
 ```yaml
 # templates/deployment.yaml - EXACT MATCH REQUIRED
 apiVersion: apps/v1
@@ -100,7 +98,7 @@ spec:
 Objective: Configure ArgoCD with safety mechanisms
 ```
 
-#### **Step 3.1: Basic Application Setup**
+#### **Basic Application Setup**
 ```yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -122,7 +120,7 @@ spec:
     namespace: <target-namespace>
 ```
 
-#### **Step 3.2: Safety Mechanisms Configuration**
+#### **Safety Mechanisms Configuration**
 ```yaml
 syncPolicy:
   automated:
@@ -138,7 +136,7 @@ syncPolicy:
   - ServerSideApply=true    # Better field ownership tracking
 ```
 
-#### **Step 3.3: Comprehensive ignoreDifferences**
+#### **Comprehensive ignoreDifferences**
 ```yaml
 ignoreDifferences:
 - group: apps
@@ -165,12 +163,12 @@ ignoreDifferences:
 Objective: Apply ArgoCD configuration and verify zero-downtime
 ```
 
-#### **Step 4.1: Apply ArgoCD Application**
+#### **Apply ArgoCD Application**
 ```bash
 kubectl apply -f argocd-apps/<app-name>.yaml
 ```
 
-#### **Step 4.2: Critical Monitoring**
+#### **Critical Monitoring**
 ```bash
 # Monitor for pod restarts (should be NONE)
 watch "kubectl get pods -l app=<app-label>"
@@ -188,7 +186,7 @@ argocd app get <app-name> --watch
 - ✅ **ArgoCD status shows "Synced"**
 - ✅ **Application remains healthy**
 
-#### **Step 4.3: Verification Process**
+#### **Verification Process**
 ```bash
 # Verify deployment unchanged
 kubectl get deployment <app-name> -o yaml | grep -A5 -B5 "template:"
@@ -242,6 +240,18 @@ Purpose: Handle expected differences gracefully
    - **Field ownership tracking** → Kubernetes manages conflicts
    - **Strategic merge patches** → Better handling of complex objects
    - **Reduced client-side conflicts** → More reliable applies
+
+```yaml
+    - SkipDryRunOnMissingResource=true
+    - ServerSideApply=true
+    
+spec:
+  syncPolicy:
+    automated:
+      prune: false      
+      selfHeal: false 
+```
+
 
 ## 🔄 Process Flow Diagram
 
