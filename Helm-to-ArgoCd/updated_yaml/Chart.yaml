@@ -11,3 +11,5 @@ keywords:
 maintainers:
   - name: DevOps Team
     email: devops@example.com
+annotations:
+  helm.sh/resource-policy: keep
