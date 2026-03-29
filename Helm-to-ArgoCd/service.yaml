@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: "2026-03-29T12:08:19Z"
+  labels:
+    app: hello-app
+  name: hello-app
+  namespace: default
+  resourceVersion: "504"
+  uid: 067fa2e1-26a9-407e-8fa2-c6f69dc30cce
+spec:
+  clusterIP: 10.107.158.78
+  clusterIPs:
+  - 10.107.158.78
+  externalTrafficPolicy: Cluster
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - nodePort: 32164
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: hello-app
+  sessionAffinity: None
+  type: NodePort
+status:
+  loadBalancer: {}
