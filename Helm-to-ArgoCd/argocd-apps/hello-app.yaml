@@ -9,7 +9,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/rajeshreddy185/Devops-Linux
-    targetRevision: main
+    targetRevision: master
     path: Helm-to-ArgoCd/updated_yaml
     helm:
       releaseName: hello-app
