@@ -15,15 +15,6 @@ spec:
       releaseName: my-nginx
       valueFiles:
       - values.yaml
-      parameters:
-      - name: controller.replicaCount
-        value: "1"
-      - name: controller.updateStrategy.type
-        value: RollingUpdate
-      - name: controller.updateStrategy.rollingUpdate.maxSurge
-        value: "25%"
-      - name: controller.updateStrategy.rollingUpdate.maxUnavailable
-        value: "25%"
       skipCrds: true
   destination:
     server: https://kubernetes.default.svc

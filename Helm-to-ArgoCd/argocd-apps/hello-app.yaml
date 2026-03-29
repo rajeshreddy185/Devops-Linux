@@ -15,15 +15,6 @@ spec:
       releaseName: hello-app
       valueFiles:
       - values.yaml
-      parameters:
-      - name: replicaCount
-        value: "1"
-      - name: strategy.type
-        value: RollingUpdate
-      - name: strategy.rollingUpdate.maxSurge
-        value: "25%"
-      - name: strategy.rollingUpdate.maxUnavailable
-        value: "25%"
       skipCrds: true
   destination:
     server: https://kubernetes.default.svc
