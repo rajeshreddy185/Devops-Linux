@@ -8,8 +8,8 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/rajeshreddy185/Devops-Linux  # Replace with your actual repo URL
-    targetRevision: HEAD
+    repoURL: https://github.com/rajeshreddy185/Devops-Linux
+    targetRevision: main
     path: Helm-to-ArgoCd/updated_yaml
     helm:
       releaseName: hello-app
