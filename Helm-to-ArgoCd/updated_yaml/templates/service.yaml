@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "hello-app.fullname" . }}
+  name: hello-app
   labels:
-    {{- include "hello-app.labels" . | nindent 4 }}
+    app: hello-app
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -15,4 +15,4 @@ spec:
       nodePort: {{ .Values.service.nodePort }}
       {{- end }}
   selector:
-    {{- include "hello-app.selectorLabels" . | nindent 4 }}
+    app: hello-app
