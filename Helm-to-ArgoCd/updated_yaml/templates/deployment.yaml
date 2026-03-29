@@ -20,6 +20,8 @@ spec:
     metadata:
       labels:
         app: hello-app
+      annotations:
+        "helm.sh/resource-policy": keep
     spec:
       containers:
       - name: hello-app
