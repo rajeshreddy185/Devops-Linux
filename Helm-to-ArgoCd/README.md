@@ -317,24 +317,11 @@ Common Issues & Solutions:
 - **Conservative sync** prevents unwanted automation
 - **Server-side apply** handles edge cases
 
-### **4. Verification-Driven**
+### **4. Verification**
 - **Monitor continuously** during migration
 - **Verify each phase** before proceeding
 - **Rollback ready** if issues detected
 
-## 🚀 Usage Instructions (Process-Based)
-
-### **For New Migrations:**
-1. **Phase 1**: Extract and analyze existing deployment
-2. **Phase 2**: Create exact-match Helm chart
-3. **Phase 3**: Configure comprehensive safety mechanisms
-4. **Phase 4**: Apply with continuous monitoring
-
-### **For Ongoing Management:**
-1. **Edit values.yaml** for configuration changes
-2. **Push to Git** for version control
-3. **Manual sync in ArgoCD** for controlled deployment
-4. **Monitor rollout** for successful application
 
 ## 📋 Migration Completion Checklist
 
