@@ -50,6 +50,7 @@ spec:
     jsonPointers:
     - /spec/replicas
     - /spec/selector
+    - /spec/template/metadata/annotations
     - /metadata/labels/app.kubernetes.io/instance
     - /metadata/labels/app.kubernetes.io/name
     - /metadata/labels/app.kubernetes.io/managed-by
