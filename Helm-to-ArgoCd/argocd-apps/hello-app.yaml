@@ -38,6 +38,7 @@ spec:
     - PruneLast=true
     - RespectIgnoreDifferences=true
     - ApplyOutOfSyncOnly=true
+    - SkipDryRunOnMissingResource=true
     retry:
       limit: 5
       backoff:
@@ -50,15 +51,11 @@ spec:
     jsonPointers:
     - /spec/replicas
     - /spec/selector
-    - /spec/template/metadata/annotations
-    - /metadata/labels/app.kubernetes.io/instance
-    - /metadata/labels/app.kubernetes.io/name
-    - /metadata/labels/app.kubernetes.io/managed-by
-    - /metadata/labels/helm.sh/chart
+    - /spec/template/metadata
+    - /metadata/labels
+    - /metadata/annotations
   - group: ""
     kind: Service
     jsonPointers:
-    - /metadata/labels/app.kubernetes.io/instance
-    - /metadata/labels/app.kubernetes.io/name
-    - /metadata/labels/app.kubernetes.io/managed-by
-    - /metadata/labels/helm.sh/chart
+    - /metadata/labels
+    - /metadata/annotations
