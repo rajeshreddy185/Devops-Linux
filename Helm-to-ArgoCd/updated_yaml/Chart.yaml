@@ -4,3 +4,10 @@ description: A lightweight hello app Helm chart
 type: application
 version: 0.1.0
 appVersion: "1.0"
+keywords:
+  - hello-app
+  - web
+  - nginx
+maintainers:
+  - name: DevOps Team
+    email: devops@example.com
