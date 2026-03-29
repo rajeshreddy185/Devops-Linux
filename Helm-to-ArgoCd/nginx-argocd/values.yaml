@@ -1,0 +1,122 @@
+replicaCount: 1
+
+controller:
+  name: controller
+  image:
+    repository: registry.k8s.io/ingress-nginx/controller
+    tag: "v1.15.1"
+    digest: "sha256:594ceea76b01c592858f803f9ff4d2cb40542cae2060410b2c95f75907d659e1"
+    pullPolicy: IfPresent
+    registry: registry.k8s.io
+  
+  replicaCount: 1
+  
+  config:
+    
+  service:
+    enabled: true
+    type: LoadBalancer
+    externalTrafficPolicy: Cluster
+    ports:
+      http: 80
+      https: 443
+    targetPorts:
+      http: http
+      https: https
+    nodePorts:
+      http: 32118
+      https: 31583
+    annotations: {}
+    
+  ingressClassResource:
+    name: nginx
+    enabled: true
+    default: false
+    controllerValue: "k8s.io/ingress-nginx"
+    
+  admissionWebhooks:
+    enabled: true
+    patch:
+      enabled: true
+      
+  metrics:
+    enabled: false
+    
+  lifecycle:
+    preStop:
+      exec:
+        command: ["/wait-shutdown"]
+        
+  podAnnotations: {}
+  
+  podSecurityContext:
+    fsGroup: 82
+    
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      add:
+      - NET_BIND_SERVICE
+      drop:
+      - ALL
+    readOnlyRootFilesystem: false
+    runAsGroup: 82
+    runAsNonRoot: true
+    runAsUser: 101
+    seccompProfile:
+      type: RuntimeDefault
+      
+  resources:
+    requests:
+      cpu: 100m
+      memory: 90Mi
+      
+  nodeSelector:
+    kubernetes.io/os: linux
+    
+  tolerations: []
+  
+  affinity: {}
+  
+  extraArgs: []
+  
+  extraEnvs: []
+  
+  extraVolumeMounts: []
+  
+  extraVolumes: []
+  
+  extraInitContainers: []
+  
+  extraContainers: []
+  
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 11
+    targetCPUUtilizationPercentage: 50
+    targetMemoryUtilizationPercentage: 50
+  
+  enableMimalloc: true
+  
+  serviceAccount:
+    create: true
+    name: ""
+    automountServiceAccountToken: true
+    
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+
+defaultBackend:
+  enabled: false
+  
+rbac:
+  create: true
+  
+serviceMonitor:
+  enabled: false
+  
+revisionHistoryLimit: 10

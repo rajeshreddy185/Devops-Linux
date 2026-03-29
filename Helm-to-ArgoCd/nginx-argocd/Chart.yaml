@@ -1,0 +1,13 @@
+apiVersion: v2
+name: nginx-ingress
+description: Nginx Ingress Controller Helm Chart for ArgoCD
+type: application
+version: 4.15.1
+appVersion: "1.15.1"
+keywords:
+  - nginx
+  - ingress
+  - controller
+maintainers:
+  - name: DevOps Team
+    email: devops@example.com

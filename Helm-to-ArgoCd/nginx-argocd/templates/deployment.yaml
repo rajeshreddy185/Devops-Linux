@@ -1,0 +1,145 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-nginx-ingress-nginx-controller
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: my-nginx
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/part-of: ingress-nginx
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+spec:
+  replicas: {{ .Values.controller.replicaCount }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: controller
+      app.kubernetes.io/instance: my-nginx
+      app.kubernetes.io/name: ingress-nginx
+  strategy:
+    type: {{ .Values.controller.updateStrategy.type }}
+    {{- if eq .Values.controller.updateStrategy.type "RollingUpdate" }}
+    rollingUpdate:
+      maxSurge: {{ .Values.controller.updateStrategy.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.controller.updateStrategy.rollingUpdate.maxUnavailable }}
+    {{- end }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: controller
+        app.kubernetes.io/instance: my-nginx
+        app.kubernetes.io/name: ingress-nginx
+        app.kubernetes.io/part-of: ingress-nginx
+        app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    spec:
+      serviceAccountName: {{ .Values.controller.serviceAccount.name }}
+      automountServiceAccountToken: {{ .Values.controller.serviceAccount.automountServiceAccountToken }}
+      securityContext:
+        {{- toYaml .Values.controller.podSecurityContext | nindent 8 }}
+      containers:
+      - name: controller
+        securityContext:
+          {{- toYaml .Values.controller.containerSecurityContext | nindent 12 }}
+        image: "{{ .Values.controller.image.registry }}/{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag }}@{{ .Values.controller.image.digest }}"
+        imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
+        args:
+        - /nginx-ingress-controller
+        - --publish-service=$(POD_NAMESPACE)/my-nginx-ingress-nginx-controller
+        - --election-id=my-nginx-ingress-nginx-leader
+        - --controller-class=k8s.io/ingress-nginx
+        - --ingress-class=nginx
+        - --configmap=$(POD_NAMESPACE)/my-nginx-ingress-nginx-controller
+        - --validating-webhook=:8443
+        - --validating-webhook-certificate=/usr/local/certificates/cert
+        - --validating-webhook-key=/usr/local/certificates/key
+        {{- if .Values.controller.extraArgs }}
+        {{- range .Values.controller.extraArgs }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        {{- if .Values.controller.enableMimalloc }}
+        - name: LD_PRELOAD
+          value: /usr/local/lib/libmimalloc.so
+        {{- end }}
+        {{- if .Values.controller.extraEnvs }}
+        {{- toYaml .Values.controller.extraEnvs | nindent 8 }}
+        {{- end }}
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        - name: https
+          containerPort: 443
+          protocol: TCP
+        - name: webhook
+          containerPort: 8443
+          protocol: TCP
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /healthz
+            port: 10254
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 10254
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+          {{- toYaml .Values.controller.resources | nindent 10 }}
+        {{- if .Values.controller.lifecycle }}
+        lifecycle:
+          {{- toYaml .Values.controller.lifecycle | nindent 10 }}
+        {{- end }}
+        volumeMounts:
+        - name: webhook-cert
+          mountPath: /usr/local/certificates/
+          readOnly: true
+        {{- if .Values.controller.extraVolumeMounts }}
+        {{- toYaml .Values.controller.extraVolumeMounts | nindent 8 }}
+        {{- end }}
+      {{- if .Values.controller.extraContainers }}
+      {{- toYaml .Values.controller.extraContainers | nindent 6 }}
+      {{- end }}
+      {{- if .Values.controller.extraInitContainers }}
+      initContainers:
+      {{- toYaml .Values.controller.extraInitContainers | nindent 6 }}
+      {{- end }}
+      nodeSelector:
+        {{- toYaml .Values.controller.nodeSelector | nindent 8 }}
+      {{- if .Values.controller.tolerations }}
+      tolerations:
+        {{- toYaml .Values.controller.tolerations | nindent 8 }}
+      {{- end }}
+      {{- if .Values.controller.affinity }}
+      affinity:
+        {{- toYaml .Values.controller.affinity | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: 300
+      volumes:
+      - name: webhook-cert
+        secret:
+          secretName: my-nginx-ingress-nginx-admission
+      {{- if .Values.controller.extraVolumes }}
+      {{- toYaml .Values.controller.extraVolumes | nindent 6 }}
+      {{- end }}

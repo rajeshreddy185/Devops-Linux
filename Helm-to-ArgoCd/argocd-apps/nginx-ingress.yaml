@@ -1,0 +1,63 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginx-ingress
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-options: CreateNamespace=true
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/rajeshreddy185/Devops-Linux
+    targetRevision: master
+    path: Helm-to-ArgoCd/nginx-argocd
+    helm:
+      releaseName: my-nginx
+      valueFiles:
+      - values.yaml
+      parameters:
+      - name: controller.replicaCount
+        value: "1"
+      - name: controller.updateStrategy.type
+        value: RollingUpdate
+      - name: controller.updateStrategy.rollingUpdate.maxSurge
+        value: "25%"
+      - name: controller.updateStrategy.rollingUpdate.maxUnavailable
+        value: "25%"
+      skipCrds: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+    syncOptions:
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true
+    - RespectIgnoreDifferences=true
+    - ApplyOutOfSyncOnly=true
+    - SkipDryRunOnMissingResource=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  ignoreDifferences:
+  - group: apps
+    kind: Deployment
+    jsonPointers:
+    - /spec/replicas
+    - /spec/selector
+    - /spec/template/metadata
+    - /metadata/labels
+    - /metadata/annotations
+  - group: ""
+    kind: Service
+    jsonPointers:
+    - /metadata/labels
+    - /metadata/annotations
+    - /spec/ports
+    - /spec/selector
