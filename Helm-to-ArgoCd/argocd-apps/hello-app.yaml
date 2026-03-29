@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hello-app
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-options: CreateNamespace=true
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/rajeshreddy185/Devops-Linux  # Replace with your actual repo URL
+    targetRevision: HEAD
+    path: Helm-to-ArgoCd/updated_yaml
+    helm:
+      releaseName: hello-app
+      valueFiles:
+      - values.yaml
+      parameters:
+      - name: replicaCount
+        value: "1"
+      - name: strategy.type
+        value: RollingUpdate
+      - name: strategy.rollingUpdate.maxSurge
+        value: "25%"
+      - name: strategy.rollingUpdate.maxUnavailable
+        value: "25%"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+    syncOptions:
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true
+    - RespectIgnoreDifferences=true
+    - ApplyOutOfSyncOnly=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  ignoreDifferences:
+  - group: apps
+    kind: Deployment
+    jsonPointers:
+    - /spec/replicas

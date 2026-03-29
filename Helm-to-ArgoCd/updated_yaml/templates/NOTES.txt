@@ -1,0 +1,9 @@
+Your hello-app application has been deployed.
+
+For more information about your deployment, run:
+  kubectl get svc {{ include "hello-app.fullname" . }} -n {{ .Release.Namespace }}
+
+To access your application, find the NodePort:
+  kubectl get svc {{ include "hello-app.fullname" . }} -n {{ .Release.Namespace }} -o jsonpath='{.spec.ports[0].nodePort}'
+
+Then access it via: http://<node-ip>:<node-port>
