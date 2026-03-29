@@ -39,6 +39,7 @@ spec:
     - RespectIgnoreDifferences=true
     - ApplyOutOfSyncOnly=true
     - SkipDryRunOnMissingResource=true
+    - ServerSideApply=true
     retry:
       limit: 5
       backoff:
@@ -52,6 +53,7 @@ spec:
     - /spec/replicas
     - /spec/selector
     - /spec/template/metadata
+    - /spec/template/spec
     - /metadata/labels
     - /metadata/annotations
   - group: ""
@@ -61,3 +63,5 @@ spec:
     - /metadata/annotations
     - /spec/ports
     - /spec/selector
+    - /spec/type
+    - /spec/externalTrafficPolicy
